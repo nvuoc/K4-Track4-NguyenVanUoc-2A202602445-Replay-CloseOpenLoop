@@ -4,11 +4,11 @@
 
 | | |
 |---|---|
-| Họ và tên | `<điền>` |
-| MSSV (đúng bằng `--student-id` bạn đã chạy) | `<điền>` |
-| GitHub | `<điền: tên tài khoản>` |
-| Seed chia dữ liệu / seed mô hình (xem `evidence/closedloop.json`, mục `student`) | `<điền>` |
-| Số seed huấn luyện bạn dùng (`--seeds`) | `<điền>` |
+| Họ và tên | Nguyễn Văn Ước |
+| MSSV (đúng bằng `--student-id` bạn đã chạy) | 2A202602445 |
+| GitHub | nvuoc |
+| Seed chia dữ liệu / seed mô hình (xem `evidence/closedloop.json`, mục `student`) | 4485 / 5505 |
+| Số seed huấn luyện bạn dùng (`--seeds`) | 3 |
 
 ## Kết quả cuối
 
