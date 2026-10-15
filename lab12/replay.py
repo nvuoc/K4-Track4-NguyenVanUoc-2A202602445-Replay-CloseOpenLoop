@@ -117,12 +117,39 @@ def replay(segs, make_stream, mode="fastest", cost_seed=0, spike_prob=0.02, base
 def compare_with_tol(golden, new, atol=1e-3, rtol=1e-3):
     """Segment-by-segment comparison. A segment 'differs' if any command is outside atol + rtol * |golden|.
     Also reports how many segments are not bit-identical, to show why exact equality is the wrong test."""
-    # TODO (Bước 1): hãy tự cài hàm này. Gợi ý:
-    #   golden và new có shape (n_seg, T), NaN ở phần đệm. Một đoạn 'lệch' nếu có lệnh nào vượt atol + rtol
-    #   * |golden|. Hai NaN ở cùng vị trí coi là bằng nhau. Trả dict có đúng các khoá: segments,
-    #   differ_beyond_tol, not_bit_identical (số đoạn không giống TỪNG BIT), max_abs_diff, atol, rtol,
-    #   differing_segments (tối đa 20 chỉ số đầu, dạng list).
-    raise NotImplementedError("TODO compare_with_tol: xem GUIDE.md, Bước 1")
+    golden = np.asarray(golden)
+    new = np.asarray(new)
+    n_seg = golden.shape[0]
+
+    g_nan = np.isnan(golden)
+    n_nan = np.isnan(new)
+    both_nan = g_nan & n_nan
+    nan_mismatch = g_nan ^ n_nan
+
+    bit_eq = (golden == new) | both_nan
+    not_bit_identical = int(np.sum(~np.all(bit_eq, axis=1)))
+
+    valid = ~g_nan & ~n_nan
+    diff = np.zeros_like(golden, dtype=float)
+    diff[valid] = np.abs(golden[valid] - new[valid])
+    tol = atol + rtol * np.abs(golden)
+
+    beyond = (valid & (diff > tol)) | nan_mismatch
+    seg_beyond = np.any(beyond, axis=1)
+    differ_beyond_tol = int(np.sum(seg_beyond))
+    differing_segments = [int(i) for i in np.flatnonzero(seg_beyond)[:20]]
+
+    max_abs_diff = float(np.max(diff[valid])) if np.any(valid) else 0.0
+
+    return {
+        "segments": int(n_seg),
+        "differ_beyond_tol": differ_beyond_tol,
+        "not_bit_identical": not_bit_identical,
+        "max_abs_diff": max_abs_diff,
+        "atol": float(atol),
+        "rtol": float(rtol),
+        "differing_segments": differing_segments,
+    }
 
 
 def summation_order_demo(n=1_000_000, seed=0):
